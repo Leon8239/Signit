@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@extends('layouts.app')
+@extends('title', 'Welcome to the Sign it Visitor book')
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,17 +23,16 @@
         </style>
     </head>
     <body>
+
     <h1>{{ $title }}</h1>
 
-    @foreach($Visitors as $visitor)
+    @foreach ($visitors as $visitor)
         <section>
+            <h2>{{ $visitor->name }}</h2>
 
-            <h2>{{$visitor->name}}</h2>
-
-            <p>{{$visitor->comments}}</p>
-
+            <p>{{ $visitor->comments }}</p>
         </section>
     @endforeach
-    <p>{{ $content }}</p>
+
     </body>
 </html>
