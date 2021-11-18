@@ -15,16 +15,16 @@ class VisitorTest extends TestCase
      *
      * @return void
      */
-    public function test_get_visitors(){
+    public function test_get_visitors()
+    {
         $response = $this->get('/visitors');
         $response->assertOk();
         $response->assertViewIs('visitors.index');
         $expectedPage1NameData = Visitor::orderBy('created_at', 'desc')
             ->take(20)
             ->pluck('comments');
-        $response->assertSeeInOrder(array_merge([
-            'All of our visitors'
-        ], $expectedPage1NameData->toArray()));
+        $response->assertSeeInOrder(array_merge(['All of our visitors'],
+            $expectedPage1NameData->toArray()));
     }
 
     public function test_update_visitors()
@@ -33,9 +33,7 @@ class VisitorTest extends TestCase
         $visitor = Visitor::factory()->create();
         $response = $this->actingAs($visitor->user)
             ->followingRedirects()
-            ->patch("/visitors/{$visitor->id}", [
-                'comments' => $newComments
-            ]);
+            ->patch("/visitors/{$visitor->id}", ['comments' => $newComments]);
         $newVisitor = $visitor->fresh();
         $response->assertOk();
         $this->assertEquals($newComments, $newVisitor->comments);
@@ -54,4 +52,24 @@ class VisitorTest extends TestCase
         $response->assertUnauthorized();
         $this->assertNotEquals($newComments, $newVisitor->comments);
     }
+
+    public function test_post_visitors(){
+        $newComments = 'Some test comments';
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user->id)
+            ->followingRedirects()
+            ->patch("/visitors/{$user->id}",[
+                'comments' => $newComments
+            ]);
+
+        $response->assertOk();
+        $newVisitor = $user->fresh();
+        $this->assertEquals($newComments, $newVisitor->comments);
+    }
+
+    public function test_delete_visitors(){
+
+    }
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,15 +17,9 @@ class VisitorController extends Controller
     public function index()
     {
         $visitors = Visitor::orderBy('created_at', 'desc')
-
             ->paginate(20);
-
-
-
         return view('visitors/index', [
-
             'visitors' => $visitors
-
         ]);
     }
 
@@ -102,21 +97,18 @@ class VisitorController extends Controller
     public function update(Request $request, Visitor $visitor)
     {
         $request->validate([
-
             'comments' => 'required'
-
         ]);
 
+        $userId = Auth::id();
 
+        if ($userId != $visitor->user->id) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
 
         $visitor->comments = $request->comments;
-
         $visitor->save();
-
-
-
         return redirect()->route('visitors.index')
-
             ->with('success', 'Signing updated successfully');
     }
 
